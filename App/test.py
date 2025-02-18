@@ -30,9 +30,12 @@ prix_max = st.sidebar.slider("Prix maximum (€)", 0, int(df['Prix Actuel'].max(
 evaluation_min = st.sidebar.slider("Évaluation minimale ⭐", 1.0, 5.0, 3.0)
 
 # Filtres spécifiques
-if type_produit in ["Écrans", "TVs"]:
+if type_produit == "Écrans":
     taille_ecran = st.sidebar.slider("Taille d'écran (pouces)", 10, 75, (15, 30))
     type_ecran = st.sidebar.selectbox("Type d'écran", options=['Tous', 'IPS', 'VA', 'LCD', 'OLED'])
+elif type_produit == "TVs":
+    taille_ecran = st.sidebar.slider("Taille d'écran (pouces)", 10, 75, (15, 30))
+    technologie_affichage = st.sidebar.selectbox("Technologie d'affichage", options=['Tous', 'LED', 'OLED', 'QLED'])
 elif type_produit in ["Smartphones", "Tablettes"]:
     taille_ecran = st.sidebar.slider("Taille d'écran (pouces)", 5, 13, (6, 10))
     os = st.sidebar.selectbox("Système d'exploitation", options=['Tous', 'Android', 'iOS'])
@@ -47,10 +50,15 @@ df_filtré = df[
     (df['Évaluation moyenne'] >= evaluation_min)
 ]
 
-if type_produit in ["Écrans", "TVs"]:
+if type_produit == "Écrans":
     df_filtré = df_filtré[
         (df_filtré['Taille de l\'écran'].between(taille_ecran[0], taille_ecran[1])) &
         ((df_filtré['Type d\'écran'] == type_ecran) | (type_ecran == 'Tous'))
+    ]
+elif type_produit == "TVs":
+    df_filtré = df_filtré[
+        (df_filtré['Taille de l\'écran'].between(taille_ecran[0], taille_ecran[1])) &
+        ((df_filtré['Technologie d\'affichage'] == technologie_affichage) | (technologie_affichage == 'Tous'))
     ]
 elif type_produit in ["Smartphones", "Tablettes"]:
     df_filtré = df_filtré[
@@ -59,7 +67,7 @@ elif type_produit in ["Smartphones", "Tablettes"]:
     ]
 elif type_produit == "Ordinateurs":
     df_filtré = df_filtré[
-        (df_filtré['RAM'] >= ram) &
+        (df_filtré['Mémoire maximale'] >= ram) &
         (df_filtré['Stockage'] >= stockage)
     ]
 
@@ -88,21 +96,25 @@ if not df_filtré.empty:
             st.write(f"**Évaluation :** {row['Évaluation moyenne']} ⭐")
             
             # Affichage des caractéristiques spécifiques
-            if type_produit in ["Écrans", "TVs"]:
+            if type_produit == "Écrans":
                 st.write(f"**Type d'écran :** {row['Type d\'écran']}")
+                st.write(f"**Taille :** {row['Taille de l\'écran']} pouces")
+            elif type_produit == "TVs":
+                st.write(f"**Technologie d'affichage :** {row['Technologie d\'affichage']}")
                 st.write(f"**Taille :** {row['Taille de l\'écran']} pouces")
             elif type_produit in ["Smartphones", "Tablettes"]:
                 st.write(f"**Système d'exploitation :** {row['Système d\'exploitation']}")
                 st.write(f"**Taille :** {row['Taille de l\'écran']} pouces")
-                st.write(f"**Stockage :** {row['Capacité de stockage de la mémoire']} Go")
+                if 'Capacité de stockage de la mémoire' in row:
+                    st.write(f"**Stockage :** {row['Capacité de stockage de la mémoire']} Go")
             elif type_produit == "Ordinateurs":
                 st.write(f"**Processeur :** {row['CPU']}")
-                st.write(f"**RAM :** {row['RAM']} Go")
+                st.write(f"**RAM :** {row['Mémoire maximale']} Go")
                 st.write(f"**Stockage :** {row['Stockage']} Go")
             
             st.write(f"**Résumé :** {row['Feature Bullets'][0]}")
             
-            # Affichage des vendeurs avec leurs lien
+            # Affichage des vendeurs avec leurs liens
             st.write("**Produits sur d'autres sites :**")
             for nom_site, lien, prix in zip(row['Vendeur'], row['Lien'], row['Prix']):
                 st.markdown(f"- [{nom_site}]({lien}) - {prix}€", unsafe_allow_html=True)
