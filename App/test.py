@@ -68,7 +68,7 @@ elif type_produit in ["Smartphones", "Tablettes"]:
 elif type_produit == "Ordinateurs":
     df_filtré = df_filtré[
         (df_filtré['Mémoire maximale'] >= ram) &
-        (df_filtré['Stockage'] >= stockage)
+        (df_filtré['Taille du disque dur'] >= stockage)
     ]
 
 # Affichage des produits
@@ -110,7 +110,7 @@ if not df_filtré.empty:
             elif type_produit == "Ordinateurs":
                 st.write(f"**Processeur :** {row['CPU']}")
                 st.write(f"**RAM :** {row['Mémoire maximale']} Go")
-                st.write(f"**Stockage :** {row['Stockage']} Go")
+                st.write(f"**Stockage :** {row['Taille du disque dur']} Go")
             
             st.write(f"**Résumé :** {row['Feature Bullets'][0]}")
             
