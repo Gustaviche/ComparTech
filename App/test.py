@@ -24,6 +24,8 @@ elif type_produit == "Tablettes":
 elif type_produit == "Ordinateurs":
     df = pd.read_csv("https://raw.githubusercontent.com/Gustaviche/ComparTech/refs/heads/main/DataFrame/ordinateurs.csv")
 
+df_reviews = pd.read_csv("https://raw.githubusercontent.com/Gustaviche/ComparTech/refs/heads/main/DataFrame/reviews.csv")
+
 # Filtres communs
 prix_min = st.sidebar.slider("Prix minimum (€)", 0, int(df['Prix Actuel'].max()), 0)
 prix_max = st.sidebar.slider("Prix maximum (€)", 0, int(df['Prix Actuel'].max()), int(df['Prix Actuel'].max()))
@@ -108,11 +110,20 @@ if not df_filtré.empty:
                 if 'Capacité de stockage de la mémoire' in row:
                     st.write(f"**Stockage :** {row['Capacité de stockage de la mémoire']} Go")
             elif type_produit == "Ordinateurs":
-                st.write(f"**Processeur :** {row['CPU']}")
+                st.write(f"**Processeur :** {row['Type de processeur']}")
                 st.write(f"**RAM :** {row['Mémoire maximale']} Go")
                 st.write(f"**Stockage :** {row['Taille du disque dur']} Go")
             
             st.write(f"**Résumé :** {row['Feature Bullets'][0]}")
+
+            # Affichage des résumés de reviews
+            st.write("**Résumés des reviews :**")
+            product_reviews = df_reviews[df_reviews['ID_produit'] == row['ID_produit']]
+            if not product_reviews.empty:
+                for _, review in product_reviews.iterrows():
+                    st.write(f"- {review['résumé']}")
+            else:
+                st.write("Aucune review disponible pour ce produit.")
             
             # Affichage des vendeurs avec leurs liens
             st.write("**Produits sur d'autres sites :**")
