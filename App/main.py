@@ -13,8 +13,10 @@ type_produit = st.sidebar.selectbox("Type de produit",
 df = load_data(type_produit)
 df_reviews = load_reviews()
 
-prix_min = st.sidebar.slider("Prix minimum (€)", 0, int(df['Prix Actuel'].max()), 0)
-prix_max = st.sidebar.slider("Prix maximum (€)", 0, int(df['Prix Actuel'].max()), int(df['Prix Actuel'].max()))
+# Double slider pour le prix
+prix_min = int(df['Prix Actuel'].min())
+prix_max = int(df['Prix Actuel'].max())
+prix_range = st.sidebar.slider("Fourchette de prix (€)", prix_min, prix_max, (prix_min, prix_max))
 evaluation_min = st.sidebar.slider("Évaluation minimale ⭐", 1.0, 5.0, 3.0)
 
 filter_params = {}
@@ -31,7 +33,8 @@ elif type_produit == "Ordinateurs":
     filter_params['ram'] = st.sidebar.slider("RAM minimale (Go)", 4, 64, 8)
     filter_params['stockage'] = st.sidebar.slider("Stockage minimal (Go)", 128, 2048, 256)
 
-df_filtré = apply_common_filters(df, prix_min, prix_max, evaluation_min)
+# Utilisez les valeurs de prix_range ici
+df_filtré = apply_common_filters(df, prix_range[0], prix_range[1], evaluation_min)
 df_filtré = apply_specific_filters(df_filtré, type_produit, **filter_params)
 
 st.subheader(f"🎯 {type_produit} filtrés")
