@@ -1,3 +1,5 @@
+import pandas as pd
+
 def apply_common_filters(df, prix_min, prix_max, evaluation_min):
     return df[
         (df['Prix Actuel'] >= prix_min) & 
@@ -6,6 +8,9 @@ def apply_common_filters(df, prix_min, prix_max, evaluation_min):
     ]
 
 def apply_specific_filters(df, type_produit, **kwargs):
+    # Convertir la colonne 'Taille de l\'écran' en numérique
+    df['Taille de l\'écran'] = pd.to_numeric(df['Taille de l\'écran'], errors='coerce')
+
     if type_produit in ["Écrans", "TVs", "Tous"]:
         df = df[
             (df['Taille de l\'écran'].between(kwargs['taille_ecran'][0], kwargs['taille_ecran'][1]))
