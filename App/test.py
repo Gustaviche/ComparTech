@@ -114,14 +114,14 @@ if not df_filtré.empty:
                 st.write(f"**RAM :** {row['Mémoire maximale']} Go")
                 st.write(f"**Stockage :** {row['Taille du disque dur']} Go")
             
-            st.write(f"**Résumé :** {row['Feature Bullets'][0]}")
+            st.write(f"**Description :** {row['Feature Bullets'][0]}")
 
             # Affichage des résumés de reviews
-            st.write("**Résumés des reviews :**")
-            product_reviews = df_reviews[df_reviews['ID_produit'] == row['ID_produit']]
+            st.write("**Ce que pensent les utilisateurs :**")
+            product_reviews = df_reviews[df_reviews['ASIN'] == row['ASIN']]
             if not product_reviews.empty:
                 for _, review in product_reviews.iterrows():
-                    st.write(f"- {review['résumé']}")
+                    st.write(f"- {review['Summary']}")
             else:
                 st.write("Aucune review disponible pour ce produit.")
             
