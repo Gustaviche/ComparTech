@@ -3,6 +3,8 @@ from load_data import load_data, load_reviews
 from filters import apply_common_filters, apply_specific_filters
 from display import display_product, display_reviews, display_seller
 from chatbots import chatbot_response, init_chat  # Importer la fonction d'initialisation du chat
+from sort import sort_products  # Importer la fonction de tri
+
 
 
 # Définir le CSS avec overlay semi-transparent
@@ -89,6 +91,15 @@ if marque_selectionnee != "Toutes":
 # Utilisation des valeurs de prix_range pour filtrer les produits
 df_filtré = apply_common_filters(df, prix_range[0], prix_range[1], evaluation_min)
 df_filtré = apply_specific_filters(df_filtré, type_produit, **filter_params)
+
+# Ajouter le tri dans la barre latérale
+st.sidebar.subheader("🗂 Trier les résultats")
+
+sort_option = st.sidebar.selectbox("Trier par", ["Prix", "Évaluation", "Marque", "Taille d'écran"])
+ascending = st.sidebar.radio("Ordre de tri", ["Croissant", "Décroissant"]) == "Croissant"
+
+# Appliquer le tri
+df_filtré = sort_products(df_filtré, sort_option, ascending)
 
 # Barre de recherche pour les produits
 search_query = st.text_input("🔍 Rechercher un produit", "")
