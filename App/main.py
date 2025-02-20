@@ -49,16 +49,12 @@ st.write("**Enfin un site où vous allez pouvoir filtrer vos produits tech préf
 
 st.sidebar.header("🔍 Filtres")
 
-# Sélectionner le type de produit avec "Tous"
+# Sélectionner le type de produit
 type_produit = st.sidebar.selectbox("**Type de produit**", 
-    ["Tous", "Écrans", "Smartphones", "TVs", "Tablettes", "Ordinateurs"])
+    ["Écrans", "Smartphones", "TVs", "Tablettes", "Ordinateurs"])
 
-# Charger les données
-if type_produit == "Tous":
-    df = load_data("all")  # Charge toutes les catégories
-else:
-    df = load_data(type_produit)
-
+# Charger les données et les avis
+df = load_data(type_produit)
 df_reviews = load_reviews()
 
 # Double slider pour le prix
@@ -67,7 +63,7 @@ prix_max = int(df['Prix Actuel'].max())
 prix_range = st.sidebar.slider("**Fourchette de prix (€)**", prix_min, prix_max, (prix_min, prix_max))
 evaluation_min = st.sidebar.slider("**Évaluation minimale** ⭐", 1.0, 5.0, 3.0)
 
-# Paramètres de filtre spécifiques au type de produit (uniquement si ce n'est pas "Tous")
+# Paramètres de filtre spécifiques au type de produit
 filter_params = {}
 if type_produit in ["Écrans", "TVs"]:
     filter_params['taille_ecran'] = st.sidebar.slider("**Taille d'écran (pouces)**", 10, 100, (15, 30))
@@ -90,28 +86,25 @@ marque_selectionnee = st.sidebar.selectbox("**Marque**", marques_disponibles)
 if marque_selectionnee != "Toutes":
     df = df[df["Marque"] == marque_selectionnee]
 
-# Appliquer les filtres globaux
+# Utilisation des valeurs de prix_range pour filtrer les produits
 df_filtré = apply_common_filters(df, prix_range[0], prix_range[1], evaluation_min)
-
-# Appliquer les filtres spécifiques si un type est sélectionné (hors "Tous")
-if type_produit != "Tous":
-    df_filtré = apply_specific_filters(df_filtré, type_produit, **filter_params)
+df_filtré = apply_specific_filters(df_filtré, type_produit, **filter_params)
 
 # Afficher les produits filtrés après recherche
 if not df_filtré.empty:
     for _, row in df_filtré.iterrows():
-        display_product(row, row["Catégorie produit"])  # Adapté à toutes les catégories
+        display_product(row, type_produit)
         display_reviews(df_reviews, row)
         display_seller(row)
 else:
     st.write("⚠ Aucun produit ne correspond à votre recherche.")
 
 # Afficher les produits filtrés
-st.subheader(f"🎯 {type_produit if type_produit != 'Tous' else 'Tous les produits'} filtrés")
+st.subheader(f"🎯 {type_produit} filtrés")
 
 if not df_filtré.empty:
     for _, row in df_filtré.iterrows():
-        display_product(row, row["Catégorie produit"])  # Prend en compte toutes les catégories
+        display_product(row, type_produit)
         display_reviews(df_reviews, row)
         display_seller(row)
 else:
@@ -142,7 +135,7 @@ with st.sidebar:
         # Ajouter le message utilisateur à l'historique
         st.session_state.messages.append({"role": "user", "content": user_input})
 
-        # Obtenir la réponse du chatbot
+        # Obtenir la réponse du chatbot (passer l'historique pour conserver la conversation)
         bot_response = chatbot_response(user_input)
 
         # Ajouter la réponse du chatbot à l'historique
@@ -152,5 +145,5 @@ with st.sidebar:
         with st.chat_message("assistant"):
             st.markdown(bot_response)
 
-        # Relancer l'application pour rafraîchir l'interface
+        # Relancer l'application pour rafraîchir l'interface avec les nouveaux messages
         st.rerun()
