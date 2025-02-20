@@ -1,10 +1,10 @@
-import os
-from dotenv import load_dotenv
-import google.generativeai as genai
 import streamlit as st
-# Charger la clé API
-load_dotenv()
-GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+import google.generativeai as genai
+
+# Charger la clé API depuis les secrets de Streamlit Cloud
+GOOGLE_API_KEY = st.secrets["google"]["api_key"]
+
+# Configurer l'API
 genai.configure(api_key=GOOGLE_API_KEY)
 
 # Initialiser le modèle
@@ -23,10 +23,13 @@ def init_chat():
 
 # Fonction pour obtenir la réponse du chatbot
 def chatbot_response(user_input):
-    # Assurer que la session est initialisée
-    init_chat()
+    try:
+        # Assurer que la session est initialisée
+        init_chat()
 
-    # Obtenir la réponse du chatbot
-    chat_session = st.session_state.chat_session
-    response = chat_session.send_message(user_input)
-    return response.text  # Retourne simplement le texte de la réponse
+        # Obtenir la réponse du chatbot
+        chat_session = st.session_state.chat_session
+        response = chat_session.send_message(user_input)
+        return response.text  # Retourne simplement le texte de la réponse
+    except Exception as e:
+        return f"Erreur lors de la génération de la réponse : {e}"
