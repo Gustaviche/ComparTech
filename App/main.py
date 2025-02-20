@@ -50,7 +50,7 @@ st.write("**Enfin un site où vous allez pouvoir filtrer vos produits tech préf
 st.sidebar.header("🔍 Filtres")
 
 # Sélectionner le type de produit
-type_produit = st.sidebar.selectbox("**Type de produit**", 
+type_produit = st.selectbox("**Type de produit**", 
     ["Écrans", "Smartphones", "TVs", "Tablettes", "Ordinateurs"])
 
 # Charger les données et les avis
