@@ -90,6 +90,14 @@ if marque_selectionnee != "Toutes":
 df_filtré = apply_common_filters(df, prix_range[0], prix_range[1], evaluation_min)
 df_filtré = apply_specific_filters(df_filtré, type_produit, **filter_params)
 
+# Barre de recherche pour les produits
+search_query = st.text_input("🔍 Rechercher un produit", "")
+
+# Filtrer les produits en fonction de la recherche (si le texte n'est pas vide)
+if search_query:
+    df_filtré = df[df['Nom'].str.contains(search_query, case=False, na=False)]
+    st.write(f"Résultats pour '{search_query}':")
+
 # Afficher les produits filtrés après recherche
 if not df_filtré.empty:
     for _, row in df_filtré.iterrows():
